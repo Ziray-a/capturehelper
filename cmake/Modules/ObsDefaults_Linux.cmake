@@ -105,7 +105,7 @@ macro(setup_obs_project)
     set_option(ENABLE_RTMPS ON)
   endif()
 
-  set(CPACK_PACKAGE_NAME "obs-studio")
+  set(CPACK_PACKAGE_NAME "Capturehelper")
   set(CPACK_PACKAGE_VENDOR "${OBS_WEBSITE}")
   set(CPACK_DEBIAN_PACKAGE_MAINTAINER "${OBS_COMPANY_NAME}")
   set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${OBS_COMMENTS}")

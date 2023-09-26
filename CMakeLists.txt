@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.16...3.25)
 if(OBS_CMAKE_VERSION VERSION_GREATER_EQUAL 3.0.0)
   include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/common/bootstrap.cmake")
 
-  project(obs-studio VERSION ${OBS_VERSION_CANONICAL})
+  project(Capturehelper VERSION ${OBS_VERSION_CANONICAL})
 
   if(CMAKE_SIZEOF_VOID_P EQUAL 4)
     include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/32bit/projects.cmake")
@@ -41,7 +41,7 @@ if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
                       "Please make a build subdirectory. Feel free to remove CMakeCache.txt and CMakeFiles.")
 endif()
 
-project(obs-studio VERSION ${OBS_VERSION_CANONICAL})
+project(Capturehelper VERSION ${OBS_VERSION_CANONICAL})
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Use target folders for MSVC/Xcode/etc.

@@ -1,8 +1,8 @@
 # OBS CMake common CPack module
 
 # Set default global CPack variables
-set(CPACK_PACKAGE_NAME obs-studio)
-set(CPACK_PACKAGE_VENDOR "${OBS_WEBSITE}")
+set(CPACK_PACKAGE_NAME Capturehelper)
+set(CPACK_PACKAGE_VENDOR "sodgeit.de")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${OBS_COMMENTS}")
 
 set(CPACK_PACKAGE_VERSION_MAJOR ${OBS_VERSION_MAJOR})

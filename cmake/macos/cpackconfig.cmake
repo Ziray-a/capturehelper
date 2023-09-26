@@ -1,4 +1,4 @@
-# OBS CMake macOS CPack configuration module
+# CAPTUREHELPER CMake macOS CPack configuration module
 
 include(cpackconfig_common)
 
@@ -12,15 +12,15 @@ else()
 endif()
 
 if(ENABLE_RELEASE_BUILD)
-  set(CPACK_PACKAGE_VERSION ${OBS_VERSION_CANONICAL})
+  set(CPACK_PACKAGE_VERSION ${CAPTUREHELPER_VERSION_CANONICAL})
 else()
-  set(CPACK_PACKAGE_VERSION ${OBS_VERSION})
+  set(CPACK_PACKAGE_VERSION ${CAPTUREHELPER_VERSION})
 endif()
 
-set(CPACK_PACKAGE_NAME "OBS")
-set(CPACK_PACKAGE_FILE_NAME "obs-studio-${CPACK_PACKAGE_VERSION}-macOS-${_cpack_arch_suffix}")
+set(CPACK_PACKAGE_NAME "CAPTUREHELPER")
+set(CPACK_PACKAGE_FILE_NAME "Capturehelper-${CPACK_PACKAGE_VERSION}-macOS-${_cpack_arch_suffix}")
 set(CPACK_COMPONENTS_ALL Application)
-set(CPACK_COMPONENT_Application_DISPLAY_NAME "OBS Studio")
+set(CPACK_COMPONENT_Application_DISPLAY_NAME "CAPTUREHELPER Studio")
 
 # Set background image and icon for generated Drag&Drop disk image
 set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_SOURCE_DIR}/cmake/macos/resources/background.tiff")
