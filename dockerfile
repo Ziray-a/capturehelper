@@ -15,5 +15,4 @@ RUN cmake -S . -B ./build -G Ninja \
 	-DQT_VERSION=6 
 RUN cmake --build ./build
 RUN cmake --build ./build --target package
-RUN apt-mark hold capturehelper
 RUN apt install -y  --allow-change-held-packages ./build/captuerhelper-29.1.3-1-Linux.deb
