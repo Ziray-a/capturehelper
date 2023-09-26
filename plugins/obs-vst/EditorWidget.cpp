@@ -19,14 +19,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "headers/EditorWidget.h"
 #include <QCloseEvent>
 
-EditorWidget::EditorWidget(QWidget *parent, VSTPlugin *plugin)
-	: QWidget(parent), plugin(plugin)
+EditorWidget::EditorWidget(QWidget *parent, VSTPlugin *plugin) : QWidget(parent), plugin(plugin)
 {
 	setWindowFlags(this->windowFlags() |= Qt::MSWindowsFixedSizeDialogHint);
 }
 
 void EditorWidget::closeEvent(QCloseEvent *event)
 {
-	plugin->onEditorClosed();
+#ifdef __APPLE__
+	event->ignore();
+#else
+	plugin->closeEditor();
 	UNUSED_PARAMETER(event);
+#endif
 }

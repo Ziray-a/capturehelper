@@ -19,10 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef OBS_STUDIO_VSTPLUGIN_H
 #define OBS_STUDIO_VSTPLUGIN_H
 
+#define VST_MAX_CHANNELS 8
 #define BLOCK_SIZE 512
 
-#include <mutex>
-#include <atomic>
 #include <string>
 #include <QDirIterator>
 #include <obs-module.h>
@@ -39,35 +38,24 @@ class EditorWidget;
 class VSTPlugin : public QObject {
 	Q_OBJECT
 
-	/* Because effect is always changed in UI thread, so lockEffect is only necessary for these situations:
-	1. access effect object outside of UI thread;
-	2. close/delete effect object any where. */
-	std::recursive_mutex lockEffect;
-	AEffect *effect = nullptr;
+	AEffect *     effect = nullptr;
 	obs_source_t *sourceContext;
-	std::string pluginPath;
+	std::string   pluginPath;
 
-	float **inputs = nullptr;
-	float **outputs = nullptr;
-	float **channelrefs = nullptr;
-	size_t numChannels = 0;
-	void createChannelBuffers(size_t count);
-	void cleanupChannelBuffers();
+	float **inputs;
+	float **outputs;
 
 	EditorWidget *editorWidget = nullptr;
-	bool editorOpened = false;
 
 	AEffect *loadEffect();
 
-	std::atomic_bool effectReady = false;
+	bool effectReady = false;
 
 	std::string sourceName;
 	std::string filterName;
-	char effectName[64];
+	char        effectName[64];
 	// Remove below... or comment out
 	char vendorString[64];
-
-	VstTimeInfo mTimeInfo;
 
 #ifdef __APPLE__
 	CFBundleRef bundle = NULL;
@@ -79,29 +67,37 @@ class VSTPlugin : public QObject {
 
 	void unloadLibrary();
 
-	static intptr_t hostCallback_static(AEffect *effect, int32_t opcode,
-					    int32_t index, intptr_t value,
-					    void *ptr, float opt);
-	VstTimeInfo *GetTimeInfo();
-	float GetSampleRate();
+	static intptr_t
+	hostCallback_static(AEffect *effect, int32_t opcode, int32_t index, intptr_t value, void *ptr, float opt)
+	{
+		if (effect && effect->user) {
+			auto *plugin = static_cast<VSTPlugin *>(effect->user);
+			return plugin->hostCallback(effect, opcode, index, value, ptr, opt);
+		}
+
+		switch (opcode) {
+		case audioMasterVersion:
+			return (intptr_t)2400;
+
+		default:
+			return 0;
+		}
+	}
+
+	intptr_t hostCallback(AEffect *effect, int32_t opcode, int32_t index, intptr_t value, void *ptr, float opt);
 
 public:
 	VSTPlugin(obs_source_t *sourceContext);
 	~VSTPlugin();
-	void loadEffectFromPath(const std::string &path);
-	void unloadEffect();
-	std::string getEffectPath();
-	std::string getChunk();
-	void setChunk(const std::string &data);
-	void setProgram(const int programNumber);
-	int getProgram();
-	void getSourceNames();
+	void            loadEffectFromPath(std::string path);
+	void            unloadEffect();
+	std::string     getChunk();
+	void            setChunk(std::string data);
+	void            setProgram(const int programNumber);
+	int             getProgram();
+	void            getSourceNames();
 	obs_audio_data *process(struct obs_audio_data *audio);
-	bool openInterfaceWhenActive = false;
-	bool vstLoaded();
-
-	bool isEditorOpen();
-	void onEditorClosed();
+	bool            openInterfaceWhenActive = false;
 
 public slots:
 	void openEditor();

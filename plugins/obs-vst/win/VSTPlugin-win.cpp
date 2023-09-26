@@ -35,28 +35,27 @@ AEffect *VSTPlugin::loadEffect()
 
 		// Display the error message and exit the process
 		if (errorCode == ERROR_BAD_EXE_FORMAT) {
-			blog(LOG_WARNING, "Could not open library, "
-					  "wrong architecture.");
+			blog(LOG_WARNING,
+			     "Could not open library, "
+			     "wrong architecture.");
 		} else {
 			blog(LOG_WARNING,
 			     "Failed trying to load VST from '%s'"
 			     ", error %d\n",
-			     pluginPath.c_str(), GetLastError());
+			     pluginPath.c_str(),
+			     GetLastError());
 		}
 		return nullptr;
 	}
 
-	vstPluginMain mainEntryPoint =
-		(vstPluginMain)GetProcAddress(dllHandle, "VSTPluginMain");
+	vstPluginMain mainEntryPoint = (vstPluginMain)GetProcAddress(dllHandle, "VSTPluginMain");
 
 	if (mainEntryPoint == nullptr) {
-		mainEntryPoint = (vstPluginMain)GetProcAddress(
-			dllHandle, "VstPluginMain()");
+		mainEntryPoint = (vstPluginMain)GetProcAddress(dllHandle, "VstPluginMain()");
 	}
 
 	if (mainEntryPoint == nullptr) {
-		mainEntryPoint =
-			(vstPluginMain)GetProcAddress(dllHandle, "main");
+		mainEntryPoint = (vstPluginMain)GetProcAddress(dllHandle, "main");
 	}
 
 	if (mainEntryPoint == nullptr) {
@@ -65,19 +64,7 @@ AEffect *VSTPlugin::loadEffect()
 	}
 
 	// Instantiate the plug-in
-	try {
-		plugin = mainEntryPoint(hostCallback_static);
-	} catch (...) {
-		blog(LOG_WARNING, "VST plugin initialization failed");
-		return nullptr;
-	}
-
-	if (plugin == nullptr) {
-		blog(LOG_WARNING, "Couldn't create instance for '%s'",
-		     pluginPath.c_str());
-		return nullptr;
-	}
-
+	plugin       = mainEntryPoint(hostCallback_static);
 	plugin->user = this;
 	return plugin;
 }
@@ -88,9 +75,4 @@ void VSTPlugin::unloadLibrary()
 		FreeLibrary(dllHandle);
 		dllHandle = nullptr;
 	}
-}
-
-bool VSTPlugin::vstLoaded()
-{
-	return (dllHandle != nullptr);
 }

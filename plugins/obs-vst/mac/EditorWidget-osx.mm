@@ -17,46 +17,50 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #import "../headers/EditorWidget.h"
 #import <Cocoa/Cocoa.h>
 #include <QLayout>
-#include <QWindow>
 
 #import "../headers/VSTPlugin.h"
 
-void EditorWidget::buildEffectContainer(AEffect *effect)
-{
-	NSView *view =
-		[[NSView alloc] initWithFrame:NSMakeRect(0, 0, 300, 300)];
-	cocoaViewContainer =
-		QWidget::createWindowContainer(QWindow::fromWinId(WId(view)));
-	cocoaViewContainer->move(0, 0);
-	cocoaViewContainer->resize(300, 300);
-	cocoaViewContainer->show();
+void EditorWidget::buildEffectContainer(AEffect *effect) {
+  cocoaViewContainer = new QMacCocoaViewContainer(nullptr, this);
+  cocoaViewContainer->move(0, 0);
+  cocoaViewContainer->resize(300, 300);
+  NSView *view = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 300, 300)];
 
-	QGridLayout *hblParams = new QGridLayout();
-	hblParams->setContentsMargins(0, 0, 0, 0);
-	hblParams->setSpacing(0);
-	hblParams->addWidget(cocoaViewContainer);
+  cocoaViewContainer->setCocoaView(view);
 
-	VstRect *vstRect = nullptr;
-	effect->dispatcher(effect, effEditGetRect, 0, 0, &vstRect, 0);
-	if (vstRect) {
-		NSRect frame = NSMakeRect(vstRect->left, vstRect->top,
-					  vstRect->right, vstRect->bottom);
+  cocoaViewContainer->show();
 
-		[view setFrame:frame];
+  auto *hblParams = new QHBoxLayout();
+  hblParams->setContentsMargins(0, 0, 0, 0);
+  hblParams->addWidget(cocoaViewContainer);
 
-		cocoaViewContainer->resize(vstRect->right - vstRect->left,
-					   vstRect->bottom - vstRect->top);
+  VstRect *vstRect = nullptr;
+  effect->dispatcher(effect, effEditGetRect, 0, 0, &vstRect, 0);
+  if (vstRect) {
+    NSRect frame = NSMakeRect(vstRect->left, vstRect->top, vstRect->right,
+                              vstRect->bottom);
 
-		setFixedSize(vstRect->right - vstRect->left,
-			     vstRect->bottom - vstRect->top);
-	}
+    [view setFrame:frame];
 
-	effect->dispatcher(effect, effEditOpen, 0, 0, view, 0);
+    cocoaViewContainer->resize(vstRect->right - vstRect->left,
+                               vstRect->bottom - vstRect->top);
 
-	setLayout(hblParams);
+    this->setGeometry(QRect(0, 0, vstRect->right - vstRect->left,
+                            vstRect->bottom - vstRect->top));
+  }
+
+  effect->dispatcher(effect, effEditOpen, 0, 0, view, 0);
+
+  this->setLayout(hblParams);
 }
 
-void EditorWidget::handleResizeRequest(int width, int height)
-{
-	setFixedSize(width, height);
+void EditorWidget::handleResizeRequest(int width, int height) {
+  resize(width, height);
+  cocoaViewContainer->resize(width, height);
+  NSView *view = cocoaViewContainer->cocoaView();
+  NSRect frame = NSMakeRect(0, 0, width, height);
+
+  [view setFrame:frame];
+
+  this->setGeometry(QRect(0, 0, width, height));
 }

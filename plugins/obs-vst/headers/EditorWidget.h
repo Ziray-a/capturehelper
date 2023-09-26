@@ -20,11 +20,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define OBS_STUDIO_EDITORDIALOG_H
 
 #include <QWidget>
-
-#if defined(_WIN32)
+#ifdef __APPLE__
+#include <QMacCocoaViewContainer>
+#elif WIN32
 #include <QWindow>
 #include <Windows.h>
-#elif defined(__linux__)
+#elif __linux__
 #include <QWindow>
 #include <xcb/xcb.h>
 #endif
@@ -47,10 +48,12 @@ class EditorWidget : public QWidget {
 
 	VSTPlugin *plugin;
 
-#if defined(__APPLE__)
-	QWidget *cocoaViewContainer = NULL;
-#elif defined(_WIN32)
+#ifdef __APPLE__
+	QMacCocoaViewContainer *cocoaViewContainer = NULL;
+#elif WIN32
 	HWND windowHandle = NULL;
+#elif __linux__
+
 #endif
 
 public:
