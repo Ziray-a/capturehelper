@@ -9,11 +9,11 @@ This might even help you even if you are not using this repo
 ```diff
 - unresolved external symbol PyCFunction_Type
 ```
-You might have either an outdated version of Python or the OBS cmake cant find your libraries, if that is the case make sure you add the Python include directory and the python3.lib from the obs-build-dependency folder
+You might have either an outdated version of Python or the OBS cmake cant find your libraries, if that is the case make sure you add the Python include directory and the python3.lib from the obs-build-dependency folder to the cmake 
 If you dont have it make sure you get it via the 
 <a href="https://github.com/obsproject/obs-deps/releases"> obs-deps releases </a> 
 ##
 
 > I cant change the name of the Binary executable
 
-Obs tends to put their name everywhere
+Obs tends to put their name everywhere in case 
