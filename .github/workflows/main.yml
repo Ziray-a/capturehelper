@@ -2,10 +2,8 @@ name: 'CI Multiplatform Build'
 
 on:
   push:
-    paths-ignore:
-      - '**.md'
     branches:
-      - master
+      - '**'
     tags:
       - '*'
   pull_request:
