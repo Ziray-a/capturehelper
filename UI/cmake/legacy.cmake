@@ -80,8 +80,9 @@ set_target_properties(
   PROPERTIES AUTOMOC ON
              AUTOUIC ON
              AUTORCC ON
-             AUTOUIC_SEARCH_PATHS "forms;forms/source-toolbar")
              OUTPUT_NAME Capturehelper
+             AUTOUIC_SEARCH_PATHS "forms;forms/source-toolbar")
+             
 
 if(_QT_VERSION EQUAL 6 AND OS_WINDOWS)
   set_target_properties(obs PROPERTIES AUTORCC_OPTIONS "--format-version;1")

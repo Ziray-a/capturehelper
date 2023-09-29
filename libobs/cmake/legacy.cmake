@@ -254,7 +254,7 @@ target_link_libraries(
 
 set_target_properties(
   libobs
-  PROPERTIES OUTPUT_NAME capturehelper
+  PROPERTIES OUTPUT_NAME Capturehelper
              FOLDER "core"
              VERSION "${OBS_VERSION_MAJOR}"
              SOVERSION "0")
