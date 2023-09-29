@@ -32,6 +32,6 @@ Sometimes Cmake doesnt use the curl that comes with git for Windows (mingw64), w
 ##
 >Some Packages could not be found
 
-1. Try setting the Cmake variable CMAKE_PREFIX_PATH to the dependencies of your os if you dont have any dependencies  <a href="https://github.com/obsproject/obs-deps/releases"> install them</a>.
+1. Try setting the Cmake variable CMAKE_PREFIX_PATH to the dependencies of your Target os if you dont have any dependencies  <a href="https://github.com/obsproject/obs-deps/releases"> install them</a>.
 2. It might me that the package is not in your depts, in that case check if the date of your depts coincides with the release date of your build version.
 3. Unfortunately you might need to find said dependency by yourself
