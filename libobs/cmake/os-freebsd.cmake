@@ -63,4 +63,4 @@ else()
   set_property(GLOBAL APPEND PROPERTY OBS_FEATURES_DISABLED "Wayland compositor support (Linux)")
 endif()
 
-set_target_properties(libobs PROPERTIES OUTPUT_NAME obs)
+set_target_properties(libobs PROPERTIES OUTPUT_NAME capturehelper)

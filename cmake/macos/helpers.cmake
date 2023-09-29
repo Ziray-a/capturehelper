@@ -30,7 +30,7 @@ function(set_target_properties_obs target)
       _check_info_plist()
       set_target_properties(
         ${target}
-        PROPERTIES OUTPUT_NAME OBS
+        PROPERTIES OUTPUT_NAME capturehelper
                    MACOSX_BUNDLE TRUE
                    MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cmake/macos/Info.plist.in"
                    XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER com.obsproject.obs-studio

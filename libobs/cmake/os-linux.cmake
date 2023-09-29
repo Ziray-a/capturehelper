@@ -67,4 +67,4 @@ else()
   target_disable_feature(libobs "Wayland compositor support (Linux)")
 endif()
 
-set_target_properties(libobs PROPERTIES OUTPUT_NAME obs)
+set_target_properties(libobs PROPERTIES OUTPUT_NAME capturehelper)

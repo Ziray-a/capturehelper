@@ -81,6 +81,7 @@ set_target_properties(
              AUTOUIC ON
              AUTORCC ON
              AUTOUIC_SEARCH_PATHS "forms;forms/source-toolbar")
+             OUTPUT_NAME Capturehelper
 
 if(_QT_VERSION EQUAL 6 AND OS_WINDOWS)
   set_target_properties(obs PROPERTIES AUTORCC_OPTIONS "--format-version;1")
@@ -334,7 +335,7 @@ if(YOUTUBE_ENABLED)
 endif()
 
 if(OS_WINDOWS)
-  set_target_properties(obs PROPERTIES WIN32_EXECUTABLE ON OUTPUT_NAME "obs${_ARCH_SUFFIX}")
+  set_target_properties(obs PROPERTIES WIN32_EXECUTABLE ON OUTPUT_NAME "Capturehelper${_ARCH_SUFFIX}")
 
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/obs.rc.in ${CMAKE_BINARY_DIR}/obs.rc)
 
