@@ -30,6 +30,7 @@
 !COPYING
 !INSTALL
 !README.rst
+!dockerfile
 
 # Exclude lock files
 *.lock.json
