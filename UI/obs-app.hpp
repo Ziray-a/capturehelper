@@ -37,6 +37,7 @@
 
 #include "window-main.hpp"
 
+const int EXIT_STOPPED_STREAM = 126;
 std::string CurrentTimeString();
 std::string CurrentDateTimeString();
 std::string GenerateTimeDateFilename(const char *extension,
@@ -274,15 +275,23 @@ extern bool safe_mode;
 extern bool disable_3p_plugins;
 
 extern bool opt_start_streaming;
+extern bool opt_custom_stream_settings;
 extern bool opt_start_recording;
 extern bool opt_start_replaybuffer;
 extern bool opt_start_virtualcam;
 extern bool opt_minimize_tray;
+extern bool opt_hide_trayicon;
+extern bool opt_close_after_streaming;
 extern bool opt_studio_mode;
 extern bool opt_allow_opengl;
 extern bool opt_always_on_top;
 extern std::string opt_starting_scene;
+extern std::string opt_custom_stream_server;
+extern std::string opt_custom_stream_key;
+extern uint64_t opt_custom_vbitrate;
+extern uint64_t opt_custom_abitrate;
 extern bool restart;
+extern bool close_after_streaming;
 extern bool restart_safe;
 
 #ifdef _WIN32

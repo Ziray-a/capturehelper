@@ -95,20 +95,30 @@ static bool multi = false;
 static bool log_verbose = false;
 static bool unfiltered_log = false;
 bool opt_start_streaming = false;
+bool opt_custom_stream_settings = false;
 bool opt_start_recording = false;
 bool opt_studio_mode = false;
 bool opt_start_replaybuffer = false;
 bool opt_start_virtualcam = false;
 bool opt_minimize_tray = false;
+bool opt_hide_trayicon = false;
+bool opt_close_after_streaming = false;
 bool opt_allow_opengl = false;
 bool opt_always_on_top = false;
 bool opt_disable_updater = false;
 bool opt_disable_missing_files_check = false;
+bool opt_disable_logfile = false;
+bool opt_disable_profilerfile = false;
 string opt_starting_collection;
 string opt_starting_profile;
 string opt_starting_scene;
+string opt_custom_stream_server;
+string opt_custom_stream_key;
+uint64_t opt_custom_vbitrate;
+uint64_t opt_custom_abitrate;
 
 bool restart = false;
+bool close_after_streaming = false;
 bool restart_safe = false;
 QStringList arguments;
 
@@ -2297,7 +2307,9 @@ static auto ProfilerFree = [](void *) {
 	profiler_print(snap.get());
 	profiler_print_time_between_calls(snap.get());
 
-	SaveProfilerData(snap);
+	if (!opt_disable_profilerfile) {
+		SaveProfilerData(snap);
+	}
 
 	profiler_free();
 };
@@ -2391,6 +2403,11 @@ static int run_program(fstream &logFile, int argc, char *argv[])
 			":/fonts/OpenSans-Italic.ttf");
 
 		bool created_log = false;
+
+		if (opt_disable_logfile) {
+			base_set_log_handler(nullptr, nullptr);
+			created_log = true;
+		}
 
 		program.AppInit();
 		delete_oldest_file(false, "obs-studio/profiler_data");
@@ -3334,6 +3351,16 @@ int main(int argc, char *argv[])
 
 		} else if (arg_is(argv[i], "--startstreaming", nullptr)) {
 			opt_start_streaming = true;
+		} else if (arg_is(argv[i], "--custom-stream-server", nullptr)) {
+			if (++i < argc) {
+				opt_custom_stream_settings = true;
+				opt_custom_stream_server = argv[i];
+			}
+		} else if (arg_is(argv[i], "--custom-stream-key", nullptr)) {
+			if (++i < argc) {
+				opt_custom_stream_settings = true;
+				opt_custom_stream_key = argv[i];
+			}
 
 		} else if (arg_is(argv[i], "--startrecording", nullptr)) {
 			opt_start_recording = true;
@@ -3356,8 +3383,27 @@ int main(int argc, char *argv[])
 			if (++i < argc)
 				opt_starting_scene = argv[i];
 
+		} else if (arg_is(argv[i], "--custom-vbitrate", nullptr)) {
+			if (++i < argc) {
+				opt_custom_vbitrate =
+					std::stoul(argv[i], nullptr, 0);
+			}
+
+		} else if (arg_is(argv[i], "--custom-abitrate", nullptr)) {
+			if (++i < argc) {
+				opt_custom_abitrate =
+					std::stoul(argv[i], nullptr, 0);
+			}
+
 		} else if (arg_is(argv[i], "--minimize-to-tray", nullptr)) {
 			opt_minimize_tray = true;
+
+		} else if (arg_is(argv[i], "--hide-trayicon", nullptr)) {
+			opt_hide_trayicon = true;
+
+		} else if (arg_is(argv[i], "--close-after-streaming",
+				  nullptr)) {
+			opt_close_after_streaming = true;
 
 		} else if (arg_is(argv[i], "--studio-mode", nullptr)) {
 			opt_studio_mode = true;
@@ -3375,6 +3421,12 @@ int main(int argc, char *argv[])
 		} else if (arg_is(argv[i], "--steam", nullptr)) {
 			steam = true;
 
+		} else if (arg_is(argv[i], "--disable-logfile", nullptr)) {
+			opt_disable_logfile = true;
+
+		} else if (arg_is(argv[i], "--disable-profilerfile", nullptr)) {
+			opt_disable_profilerfile = true;
+
 		} else if (arg_is(argv[i], "--help", "-h")) {
 			std::string help =
 				"--help, -h: Get list of available commands.\n\n"
@@ -3382,12 +3434,17 @@ int main(int argc, char *argv[])
 				"--startrecording: Automatically start recording.\n"
 				"--startreplaybuffer: Start replay buffer.\n"
 				"--startvirtualcam: Start virtual camera (if available).\n\n"
-				"--collection <string>: Use specific scene collection."
-				"\n"
+				"--scene <string>: Start with specific scene.\n"
+				"--custom-vbitrate <int>: Set specific video-bitrate.\n"
+				"--custom-abitrate <int>: Set specific audio-bitrate.\n\n"
+				"--custom-stream-server <string>: Override the server for streaming.\n"
+				"--custom-stream-key <string>: Override the key for streaming.\n\n"
 				"--profile <string>: Use specific profile.\n"
 				"--scene <string>: Start with specific scene.\n\n"
 				"--studio-mode: Enable studio mode.\n"
 				"--minimize-to-tray: Minimize to system tray.\n"
+				"--hide-trayicon: Do not show the system trayicon.\n"
+				"--close-after-streaming: Close the program after streaming.\n"
 #if ALLOW_PORTABLE_MODE
 				"--portable, -p: Use portable mode.\n"
 #endif
@@ -3399,7 +3456,9 @@ int main(int argc, char *argv[])
 				"--always-on-top: Start in 'always on top' mode.\n\n"
 				"--unfiltered_log: Make log unfiltered.\n\n"
 				"--disable-updater: Disable built-in updater (Windows/Mac only)\n\n"
-				"--disable-missing-files-check: Disable the missing files dialog which can appear on startup.\n\n";
+				"--disable-missing-files-check: Disable the missing files dialog which can appear on startup.\n\n"
+				"--disable-logfile: Disable writing of logfile.\n\n"
+				"--disable-profilerfile: Disable writing of profilerfile.\n\n";
 
 #ifdef _WIN32
 			MessageBoxA(NULL, help.c_str(), "Help",
@@ -3468,6 +3527,10 @@ int main(int argc, char *argv[])
 	if (restart || restart_safe) {
 		auto executable = arguments.takeFirst();
 		QProcess::startDetached(executable, arguments);
+	}
+
+	if (close_after_streaming) {
+		return EXIT_STOPPED_STREAM;
 	}
 
 	return ret;

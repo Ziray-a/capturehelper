@@ -1394,6 +1394,19 @@ bool OBSBasic::LoadService()
 	OBSDataAutoRelease settings = obs_data_get_obj(data, "settings");
 	OBSDataAutoRelease hotkey_data = obs_data_get_obj(data, "hotkeys");
 
+	if (opt_custom_stream_settings) {
+		obs_data_set_string(data, "type", "rtmp_custom");
+	}
+	if (!opt_custom_stream_server.empty()) {
+		obs_data_set_string(settings, "server",
+				    opt_custom_stream_server.c_str());
+	}
+
+	if (!opt_custom_stream_key.empty()) {
+		obs_data_set_string(settings, "key",
+				    opt_custom_stream_key.c_str());
+	}
+
 	service = obs_service_create(type, "default_service", settings,
 				     hotkey_data);
 	obs_service_release(service);
@@ -1738,6 +1751,15 @@ bool OBSBasic::InitBasicConfigDefaults()
 	config_set_default_double(basicConfig, "Audio", "MeterDecayRate",
 				  VOLUME_METER_DECAY_FAST);
 	config_set_default_uint(basicConfig, "Audio", "PeakMeterType", 0);
+
+	if (opt_custom_vbitrate > 0) {
+		config_set_uint(this->Config(), "SimpleOutput", "VBitrate",
+				opt_custom_vbitrate);
+	}
+	if (opt_custom_abitrate > 0) {
+		config_set_uint(this->Config(), "SimpleOutput", "ABitrate",
+				opt_custom_abitrate);
+	}
 
 	CheckExistingCookieId();
 
@@ -2143,8 +2165,9 @@ void OBSBasic::OBSInit()
 #ifdef _WIN32
 	SetWin32DropStyle(this);
 
-	if (!hideWindowOnStart)
+	if (!hideWindowOnStart && !opt_minimize_tray) {
 		show();
+	}
 #endif
 
 	bool alwaysOnTop = config_get_bool(App()->GlobalConfig(), "BasicWindow",
@@ -2168,8 +2191,9 @@ void OBSBasic::OBSInit()
 	}
 
 #ifndef _WIN32
-	if (!hideWindowOnStart)
+	if (!hideWindowOnStart && !opt_minimize_tray) {
 		show();
+	}
 #endif
 
 	/* setup stats dock */
@@ -7517,6 +7541,13 @@ void OBSBasic::StreamingStop(int code, QString last_error)
 	// Reset broadcast button state/text
 	if (!broadcastActive)
 		SetBroadcastFlowEnabled(auth && auth->broadcastFlow());
+
+	if (opt_close_after_streaming) {
+		blog(LOG_INFO,
+		     "Closing application due to command line parameter and stopped stream");
+		close_after_streaming = true;
+		close();
+	}
 }
 
 void OBSBasic::AutoRemux(QString input, bool no_show)
@@ -9857,7 +9888,11 @@ void OBSBasic::SystemTrayInit()
 	trayMenu->addSeparator();
 	trayMenu->addAction(exit);
 	trayIcon->setContextMenu(trayMenu);
-	trayIcon->show();
+	if (opt_hide_trayicon) {
+		trayIcon->hide();
+	} else {
+		trayIcon->show();
+	}
 
 	if (outputHandler && !outputHandler->replayBuffer)
 		sysTrayReplayBuffer->setEnabled(false);
@@ -9930,7 +9965,9 @@ void OBSBasic::SystemTray(bool firstStarted)
 	if (!sysTrayEnabled) {
 		trayIcon->hide();
 	} else {
-		trayIcon->show();
+		if (!opt_hide_trayicon) {
+			trayIcon->show();
+		}
 		if (firstStarted && (sysTrayWhenStarted || opt_minimize_tray)) {
 			EnablePreviewDisplay(false);
 #ifdef __APPLE__
