@@ -1,9 +1,18 @@
+Capturehelper - based on OBS STUDIO
+===================================
+
+Fork for pseudo headless streaming, bugs included =)
+
+See `Launch Parameters <https://github.com/sodgeit/capturehelper/wiki/Launch-Parameters>`_ for Usage-Instructions
+
+
+
 OBS Studio <https://obsproject.com>
 ===================================
 
-.. image:: https://github.com/obsproject/obs-studio/actions/workflows/push.yaml/badge.svg?branch=master
+.. image:: https://github.com/sodgeit/capturehelper/actions/workflows/main.yml/badge.svg?branch=main&event=push
    :alt: OBS Studio Build Status - GitHub Actions
-   :target: https://github.com/obsproject/obs-studio/actions/workflows/push.yaml?query=branch%3Amaster
+   :target: https://github.com/sodgeit/capturehelper/actions/workflows/main.yml?query=event%3Apush+branch%3Amain
 
 .. image:: https://badges.crowdin.net/obs-studio/localized.svg
    :alt: OBS Studio Translation Project Progress
